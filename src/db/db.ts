@@ -5,11 +5,14 @@ import { EventEmitter } from 'events';
 import knex, { Transaction } from 'knex';
 
 // tslint:disable-next-line: interface-over-type-literal
-type LinkObj = {
+export type LinkObj = {
   url: string;
   author: string;
   timestamp: number;
   discord_id: string;
+  title: string | null;
+  description: string | null;
+  original_message: string | null;
 };
 
 export class Database extends EventEmitter {
@@ -38,6 +41,15 @@ export class Database extends EventEmitter {
     }
   }
 
+  public async getUnsubmittedLinks(): Promise<any> {
+    const query = await this.sql('links')
+      .select()
+      .where({ submitted: 0 })
+      .orderBy('timestamp', 'asc');
+
+    return query;
+  }
+
   public async getTopMessage(): Promise<any> {
     const query = await this.sql('internal').select('topMessage');
     return query[0].topMessage;
@@ -45,6 +57,10 @@ export class Database extends EventEmitter {
 
   public async setTopMessage(discordID: string) {
     await this.sql('internal').update({ topMessage: discordID });
+  }
+
+  public async setAllSubmitted() {
+    await this.sql('links').update({ submitted: 1 });
   }
 
   private async init(): Promise<void> {
@@ -63,7 +79,10 @@ export class Database extends EventEmitter {
           "author" TEXT,
           "timestamp" INTEGER,
           "discord_id" TEXT UNIQUE,
-          "submitted" BOOLEAN DEFAULT false
+          "submitted" BOOLEAN DEFAULT false,
+          "description" TEXT,
+          "title" TEXT,
+          "original_message" TEXT
         );`
       );
     }

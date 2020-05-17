@@ -8,6 +8,8 @@
   "private": true,
   "scripts": {
     "start": "yarn build; node ./dist/index.js",
+    "scrape": "yarn build; node ./dist/scrape.js",
+    "submit": "yarn build; node ./dist/submit.js",
     "build": "node ./node_modules/typescript/bin/tsc",
     "prettier": "node ./node_modules/prettier/bin-prettier.js '**/*.{ts,tsx,json,md}' --trailing-comma es5 --ignore-path .gitignore --single-quote --arrow-parens always --write",
     "lint": "./node_modules/tslint/bin/tslint src/**/*.ts{,x}",
@@ -33,12 +35,17 @@
     }
   },
   "dependencies": {
+    "@types/jsdom": "^16.2.3",
+    "@types/selenium-webdriver": "^4.0.9",
     "@types/ws": "^7.2.4",
+    "axios": "^0.19.2",
     "chalk": "^4.0.0",
     "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
     "electron-log": "^4.1.1",
+    "jsdom": "^16.2.2",
     "knex": "^0.21.1",
+    "selenium-webdriver": "^4.0.0-alpha.7",
     "sqlite3": "^4.2.0"
   }
 }
