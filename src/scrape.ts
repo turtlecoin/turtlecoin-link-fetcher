@@ -42,10 +42,10 @@ async function scrape() {
       const msgList = [...messages.values()].reverse();
 
       if (msgList.length === 0) {
-        break;
+        process.exit(0);
       }
 
-      msgList.map(async (msg: Message) => {
+      await msgList.map(async (msg: Message) => {
         const { content } = msg;
 
         const urlMatches = content.match(/\bhttps?:\/\/\S+/gi);
