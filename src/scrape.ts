@@ -1,31 +1,22 @@
-import ax from 'axios';
-import { Channel, Client, Message, TextChannel } from 'discord.js';
-import log from 'electron-log';
-import { JSDOM, VirtualConsole } from 'jsdom';
-import { performance } from 'perf_hooks';
+import ax from "axios";
+import { Channel, Client, Message, TextChannel } from "discord.js";
+import log from "electron-log";
+import { JSDOM, VirtualConsole } from "jsdom";
+import { performance } from "perf_hooks";
 // tslint:disable-next-line: no-submodule-imports
-import { CHANNEL_ID, GENESIS_MESSAGE_ID } from './constants/constants';
-import { Database } from './db/db';
-import { loadEnv } from './utils/loadEnv';
+import { CHANNEL_ID, GENESIS_MESSAGE_ID } from "./constants/constants";
+import { db } from "./main";
+import { loadEnv } from "./utils/loadEnv";
+import { sleep } from "./utils/sleep";
+
+export const sleepTime = 1000 * 60 * 1;
 
 // load the environment variables
 loadEnv();
-
-// initialize the db
-export const db = new Database();
-
-// start the main loop
-main();
-
-// main entry point
-async function main() {
-  await scrape();
-}
-
 // scrapes the channel
-async function scrape() {
+export async function scrape() {
   const client = new Client();
-  client.on('ready', async () => {
+  client.on("ready", async () => {
     const startTime = performance.now();
     log.info(`Logged in as ${client.user!.tag}!`);
     const otChannel: Channel = await client.channels.fetch(CHANNEL_ID);
@@ -42,7 +33,9 @@ async function scrape() {
       const msgList = [...messages.values()].reverse();
 
       if (msgList.length === 0) {
-        process.exit(0);
+        console.log("No messages found, sleeping.");
+        await sleep(sleepTime);
+        continue;
       }
 
       await msgList.map(async (msg: Message) => {
@@ -55,35 +48,37 @@ async function scrape() {
             let title: string | null = null;
             let description: string | null = null;
 
+            console.log("Found a new link! Fetching " + url);
+
             try {
               const res = await ax.get(url);
               const virtualConsole = new VirtualConsole();
               const dom = new JSDOM(res.data, { virtualConsole });
 
-              const titles = dom.window.document.getElementsByTagName('title');
+              const titles = dom.window.document.getElementsByTagName("title");
               if (titles.length > 0) {
                 title = titles[0].textContent;
               }
 
-              const metas = dom.window.document.getElementsByTagName('meta');
+              const metas = dom.window.document.getElementsByTagName("meta");
               for (const meta of metas) {
-                if (meta.getAttribute('name') === 'description') {
-                  description = meta.getAttribute('content');
+                if (meta.getAttribute("name") === "description") {
+                  description = meta.getAttribute("content");
                 }
               }
 
               if (!description) {
                 for (const meta of metas) {
-                  if (meta.getAttribute('property') === 'og:description') {
-                    description = meta.getAttribute('content');
+                  if (meta.getAttribute("property") === "og:description") {
+                    description = meta.getAttribute("content");
                   }
                 }
               }
 
               if (!title) {
                 for (const meta of metas) {
-                  if (meta.getAttribute('property') === 'og:title') {
-                    description = meta.getAttribute('content');
+                  if (meta.getAttribute("property") === "og:title") {
+                    description = meta.getAttribute("content");
                   }
                 }
               }

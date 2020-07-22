@@ -1,8 +1,8 @@
 // tslint:disable: variable-name
-import chalk from 'chalk';
-import log from 'electron-log';
-import { EventEmitter } from 'events';
-import knex, { Transaction } from 'knex';
+import chalk from "chalk";
+import log from "electron-log";
+import { EventEmitter } from "events";
+import knex, { Transaction } from "knex";
 
 // tslint:disable-next-line: interface-over-type-literal
 export type LinkObj = {
@@ -18,9 +18,9 @@ export type LinkObj = {
 export class Database extends EventEmitter {
   public ready: boolean;
   public sql: knex<any, unknown> = knex({
-    client: 'sqlite3',
+    client: "sqlite3",
     connection: {
-      filename: './db.sqlite',
+      filename: "./db.sqlite",
     },
     useNullAsDefault: true,
   });
@@ -33,7 +33,7 @@ export class Database extends EventEmitter {
 
   public async storeLink(linkObj: LinkObj): Promise<void> {
     try {
-      await this.sql('links').insert(linkObj);
+      await this.sql("links").insert(linkObj);
     } catch (err) {
       if (err.errno !== 19) {
         throw err;
@@ -42,25 +42,25 @@ export class Database extends EventEmitter {
   }
 
   public async getUnsubmittedLinks(): Promise<any> {
-    const query = await this.sql('links')
+    const query = await this.sql("links")
       .select()
       .where({ submitted: 0 })
-      .orderBy('timestamp', 'asc');
+      .orderBy("timestamp", "asc");
 
     return query;
   }
 
   public async getTopMessage(): Promise<any> {
-    const query = await this.sql('internal').select('topMessage');
+    const query = await this.sql("internal").select("topMessage");
     return query[0].topMessage;
   }
 
   public async setTopMessage(discordID: string) {
-    await this.sql('internal').update({ topMessage: discordID });
+    await this.sql("internal").update({ topMessage: discordID });
   }
 
   public async setAllSubmitted() {
-    await this.sql('links').update({ submitted: 1 });
+    await this.sql("links").update({ submitted: 1 });
   }
 
   private async init(): Promise<void> {
@@ -71,7 +71,7 @@ export class Database extends EventEmitter {
     );
     const tableNames = tables.map((table: any) => table.name);
 
-    if (!tableNames.includes('links')) {
+    if (!tableNames.includes("links")) {
       await this.sql.raw(
         `CREATE TABLE "links" (
           "id" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -87,17 +87,17 @@ export class Database extends EventEmitter {
       );
     }
 
-    if (!tableNames.includes('internal')) {
+    if (!tableNames.includes("internal")) {
       await this.sql.raw(
         `CREATE TABLE "internal" (
           "topMessage" TEXT
         );`
       );
 
-      await this.sql('internal').insert({});
+      await this.sql("internal").insert({});
     }
 
     this.ready = true;
-    log.info('Database opened successfully');
+    log.info("Database opened successfully");
   }
 }

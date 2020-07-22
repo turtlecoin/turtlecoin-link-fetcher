@@ -1,4 +1,4 @@
-import { config } from 'dotenv';
+import { config } from "dotenv";
 
 /* 
   Populate process.env with vars from .env and verify required vars are present. 
@@ -6,7 +6,7 @@ import { config } from 'dotenv';
 */
 export function loadEnv(): void {
   config();
-  const requiredEnvVars: string[] = ['DISCORD_TOKEN'];
+  const requiredEnvVars: string[] = ["DISCORD_TOKEN"];
   for (const required of requiredEnvVars) {
     if (process.env[required] === undefined) {
       console.warn(
