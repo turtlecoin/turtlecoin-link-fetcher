@@ -7,9 +7,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "yarn build; node ./dist/main.js",
-    "scrape": "yarn build; node ./dist/scrape.js",
-    "submit": "yarn build; node ./dist/submit.js",
+    "start": "node ./dist/main.js",
     "build": "node ./node_modules/typescript/bin/tsc",
     "prettier": "node ./node_modules/prettier/bin-prettier.js '**/*.{ts,tsx,json,md}' --trailing-comma es5 --ignore-path .gitignore --arrow-parens always --write",
     "lint": "./node_modules/tslint/bin/tslint src/**/*.ts{,x}",
