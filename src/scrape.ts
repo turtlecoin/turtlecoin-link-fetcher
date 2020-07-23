@@ -33,7 +33,7 @@ export async function scrape() {
       const msgList = [...messages.values()].reverse();
 
       if (msgList.length === 0) {
-        console.log("No messages found, sleeping.");
+        // console.log("No messages found, sleeping.");
         await sleep(sleepTime);
         continue;
       }
@@ -108,6 +108,8 @@ export async function scrape() {
       messagesScraped += msgList.length;
     }
   });
+
+  client.on("disconnect", scrape);
 
   client.login(process.env.DISCORD_TOKEN);
 }

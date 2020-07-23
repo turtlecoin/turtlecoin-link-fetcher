@@ -13,7 +13,7 @@ export async function submit() {
     const links: LinkObj[] = await db.getUnsubmittedLinks();
 
     if (links.length === 0) {
-      console.log("No new links in database, sleeping.");
+      // console.log("No new links in database, sleeping.");
       await sleep(sleepTime);
       continue;
     }
@@ -46,10 +46,11 @@ export async function submit() {
           By.className("appsMaterialWizButtonPaperbuttonLabel")
         )
       ).click();
-      console.log("successfully submitted " + str);
+      console.log("successfully submitted:\n" + str);
     }
     await driver.quit();
     await db.setAllSubmitted();
+    console.log("Browser closed.");
   }
 }
 
